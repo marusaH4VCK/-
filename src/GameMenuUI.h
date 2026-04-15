@@ -1,60 +1,63 @@
-#pragma once
 #import <UIKit/UIKit.h>
 
-// ─── Colors ─────────────────────────────────────────────────────────────────
-#define GM_BG_LIGHT        [UIColor colorWithWhite:0.77f alpha:1.0f]
-#define GM_SIDEBAR_LIGHT   [UIColor colorWithWhite:0.73f alpha:1.0f]
-#define GM_ROW_LIGHT       [UIColor colorWithWhite:0.60f alpha:1.0f]
-#define GM_PILL_LIGHT      [UIColor colorWithWhite:0.67f alpha:1.0f]
-#define GM_TEXT_LIGHT      [UIColor colorWithWhite:0.07f alpha:1.0f]
-#define GM_SUBTEXT_LIGHT   [UIColor colorWithWhite:0.35f alpha:1.0f]
-#define GM_THUMB_LIGHT     [UIColor colorWithWhite:0.94f alpha:1.0f]
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - Enums
+// ═══════════════════════════════════════════════════════════════════════════════
 
-#define GM_BG_DARK         [UIColor colorWithWhite:0.23f alpha:1.0f]
-#define GM_SIDEBAR_DARK    [UIColor colorWithWhite:0.20f alpha:1.0f]
-#define GM_ROW_DARK        [UIColor colorWithWhite:0.29f alpha:1.0f]
-#define GM_PILL_DARK       [UIColor colorWithWhite:0.33f alpha:1.0f]
-#define GM_TEXT_DARK       [UIColor colorWithWhite:0.93f alpha:1.0f]
-#define GM_SUBTEXT_DARK    [UIColor colorWithWhite:0.55f alpha:1.0f]
-#define GM_THUMB_DARK      [UIColor colorWithWhite:0.80f alpha:1.0f]
-
-#define GM_CHECK_BG        [UIColor colorWithWhite:0.07f alpha:1.0f]
-#define GM_SEG_ACTIVE      [UIColor colorWithWhite:0.13f alpha:1.0f]
-#define GM_WARNING         [UIColor colorWithRed:1.0f green:0.8f blue:0.0f alpha:1.0f]
-
-// ─── Tab IDs ─────────────────────────────────────────────────────────────────
 typedef NS_ENUM(NSInteger, GMTab) {
     GMTabESP = 0,
     GMTabAimbot,
     GMTabMSL,
     GMTabMISC,
     GMTabUI,
-    GMTabSettings,
+    GMTabSettings
 };
 
-@class GMToggleRow;
-@class GMSliderRow;
-@class GMSegmentRow;
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - Color Constants (Only declare, not define)
+// ═══════════════════════════════════════════════════════════════════════════════
 
-// ─── GMToggleRow ─────────────────────────────────────────────────────────────
+extern UIColor *GM_BG_DARK;
+extern UIColor *GM_BG_LIGHT;
+extern UIColor *GM_SIDEBAR_DARK;
+extern UIColor *GM_SIDEBAR_LIGHT;
+extern UIColor *GM_PILL_DARK;
+extern UIColor *GM_PILL_LIGHT;
+extern UIColor *GM_ROW_DARK;
+extern UIColor *GM_ROW_LIGHT;
+extern UIColor *GM_TEXT_DARK;
+extern UIColor *GM_TEXT_LIGHT;
+extern UIColor *GM_SUBTEXT_DARK;
+extern UIColor *GM_SUBTEXT_LIGHT;
+extern UIColor *GM_CHECK_BG;
+extern UIColor *GM_THUMB_DARK;
+extern UIColor *GM_SEG_ACTIVE;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMToggleRow
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMToggleRow : UIView
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *subtitle;
 @property (nonatomic, assign) BOOL isOn;
-@property (nonatomic, assign) BOOL useCircleStyle;   // NO = checkmark, YES = pill
-@property (nonatomic, copy)   NSString *title;
-@property (nonatomic, copy)   NSString *subtitle;    // nullable
-@property (nonatomic, copy)   void (^onToggle)(BOOL isOn);
+@property (nonatomic, assign) BOOL useCircleStyle;
+@property (nonatomic, copy) void (^onToggle)(BOOL isOn);
 - (instancetype)initWithTitle:(NSString *)title
                      subtitle:(NSString *)subtitle
-                          isOn:(BOOL)isOn
+                         isOn:(BOOL)isOn
                   circleStyle:(BOOL)circle
-                      isDark:(BOOL)dark;
+                       isDark:(BOOL)dark;
 - (void)applyTheme:(BOOL)dark;
 @end
 
-// ─── GMSliderRow ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMSliderRow
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMSliderRow : UIView
 @property (nonatomic, assign) float value;
-@property (nonatomic, copy)   void (^onValueChange)(float value);
+@property (nonatomic, copy) void (^onValueChange)(float value);
 - (instancetype)initWithTitle:(NSString *)title
                           min:(float)min
                           max:(float)max
@@ -64,10 +67,13 @@ typedef NS_ENUM(NSInteger, GMTab) {
 - (void)applyTheme:(BOOL)dark;
 @end
 
-// ─── GMSegmentRow ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMSegmentRow
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMSegmentRow : UIView
 @property (nonatomic, assign) NSInteger selectedIndex;
-@property (nonatomic, copy)   void (^onSelect)(NSInteger index);
+@property (nonatomic, copy) void (^onSelect)(NSInteger index);
 - (instancetype)initWithOptions:(NSArray<NSString *> *)options
                   selectedIndex:(NSInteger)index
                           label:(NSString *)label
@@ -75,7 +81,10 @@ typedef NS_ENUM(NSInteger, GMTab) {
 - (void)applyTheme:(BOOL)dark;
 @end
 
-// ─── GMMenuViewController ────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMMenuViewController
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMMenuViewController : UIViewController
 @property (nonatomic, assign) BOOL isDark;
 + (instancetype)sharedController;
@@ -83,20 +92,22 @@ typedef NS_ENUM(NSInteger, GMTab) {
 - (void)dismiss;
 @end
 
-// ─── GMMenuWindow ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMMenuWindow
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMMenuWindow : UIWindow
 + (instancetype)sharedWindow;
 - (void)show;
 - (void)hide;
 @end
 
-// ─── GMFloatingButton ────────────────────────────────────────────────────────
-// ปุ่มลอยกดเปิด/ปิด menu — วางแยกใน UIWindow ของตัวเอง
-// ลาก (drag) ย้ายตำแหน่งได้, กด (tap) สลับ menu
-// การใช้งาน: สร้าง 1 ครั้งแล้วเก็บ strong reference
-//   GMFloatingButton *fb = [GMFloatingButton sharedButton];
-//   [fb install]; // เพิ่มลงบนหน้าจอ
+// ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - GMFloatingButton
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @interface GMFloatingButton : NSObject
 + (instancetype)sharedButton;
-- (void)install;  // เรียกครั้งเดียวตอน app พร้อม
+- (void)install;
+- (void)toggleMenu;
 @end
