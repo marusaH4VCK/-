@@ -850,7 +850,7 @@ static GMMenuViewController *_sharedController;
     [UIView animateWithDuration:0.18 animations:^{
         self->_container.transform = CGAffineTransformMakeScale(0.90f, 0.90f);
         self->_container.alpha = 0;
-    } completion:^(BOOL done) {
+    } completion:^(BOOL __unused done) {
         [GMMenuWindow sharedWindow].hidden = YES;
     }];
 }
@@ -919,6 +919,34 @@ static GMFloatingButton *_sharedFloatingButton;
 @end
 
 @implementation GMFloatingButton {
+- (void)toggleMenu {
+    _isOpen = !_isOpen;
+    if (_isOpen) {
+        [[GMMenuWindow sharedWindow] show];
+    } else {
+        [[GMMenuWindow sharedWindow] hide];
+    }
+    
+    [UIView animateWithDuration:0.20 animations:^{
+        if (self->_isOpen) {
+            self->_ring.layer.borderColor = [UIColor colorWithRed:1.0f green:0.91f blue:0.20f alpha:1].CGColor;
+            self->_dot.backgroundColor = [UIColor colorWithRed:0.25f green:0.85f blue:0.45f alpha:1];
+        } else {
+            self->_ring.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.70f].CGColor;
+            self->_dot.backgroundColor = [UIColor colorWithWhite:0.55f alpha:1];
+        }
+    }];
+    
+    [UIView animateWithDuration:0.10 animations:^{
+        self->_btnView.transform = CGAffineTransformMakeScale(0.86f, 0.86f);
+    } completion:^(__unused BOOL d) {
+        [UIView animateWithDuration:0.25 delay:0
+             usingSpringWithDamping:0.55 initialSpringVelocity:0.5
+                            options:0 animations:^{
+            self->_btnView.transform = CGAffineTransformIdentity;
+        } completion:nil];
+    }];
+}
     _GMFloatWindow *_window;
     UIView         *_btnView;
     UIView         *_ring;
