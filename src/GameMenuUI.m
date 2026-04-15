@@ -2,6 +2,26 @@
 #import <objc/runtime.h>
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MARK: - Color Constants
+// ═══════════════════════════════════════════════════════════════════════════════
+
+#define GM_BG_DARK          [UIColor colorWithWhite:0.12f alpha:1]
+#define GM_BG_LIGHT         [UIColor colorWithWhite:0.96f alpha:1]
+#define GM_SIDEBAR_DARK     [UIColor colorWithWhite:0.18f alpha:1]
+#define GM_SIDEBAR_LIGHT    [UIColor colorWithWhite:0.88f alpha:1]
+#define GM_PILL_DARK        [UIColor colorWithWhite:0.25f alpha:1]
+#define GM_PILL_LIGHT       [UIColor colorWithWhite:0.98f alpha:1]
+#define GM_ROW_DARK         [UIColor colorWithWhite:0.20f alpha:1]
+#define GM_ROW_LIGHT        [UIColor colorWithWhite:1.0f alpha:1]
+#define GM_TEXT_DARK        [UIColor whiteColor]
+#define GM_TEXT_LIGHT       [UIColor colorWithWhite:0.12f alpha:1]
+#define GM_SUBTEXT_DARK     [UIColor colorWithWhite:0.60f alpha:1]
+#define GM_SUBTEXT_LIGHT    [UIColor colorWithWhite:0.55f alpha:1]
+#define GM_CHECK_BG         [UIColor colorWithRed:0.30f green:0.65f blue:0.95f alpha:1]
+#define GM_THUMB_DARK       [UIColor colorWithWhite:0.85f alpha:1]
+#define GM_SEG_ACTIVE       [UIColor colorWithRed:0.25f green:0.60f blue:0.95f alpha:1]
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MARK: - Helpers
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -394,7 +414,6 @@ static UIImage *CheckmarkImage(CGFloat size, UIColor *color) {
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    // FIX: was `.Width` (capital W) — now correctly `.width`
     CGFloat W = self.bounds.size.width;
     CGFloat pad = 2.0f;
     CGFloat labelH = _label ? 18.0f : 0.0f;
@@ -777,7 +796,7 @@ static GMMenuViewController *_sharedController;
         case GMTabSettings: rows = BuildSettingsTab(_isDark); break;
     }
 
-    CGFloat W   = _scrollView.frame.size.width;   // frame is set explicitly
+    CGFloat W   = _scrollView.frame.size.width;
     CGFloat y   = 6.0f, gap = 6.0f, pad = 10.0f;
 
     for (UIView *row in rows) {
@@ -839,7 +858,7 @@ static GMMenuViewController *_sharedController;
 @end
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MARK: - GMMenuWindow  (UIWindow wrapper — ใช้สิ่งนี้เป็น entry point)
+// MARK: - GMMenuWindow  (UIWindow wrapper)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 static GMMenuWindow *_sharedWindow;
@@ -848,7 +867,6 @@ static GMMenuWindow *_sharedWindow;
 
 + (instancetype)sharedWindow {
     if (!_sharedWindow) {
-        // iOS 13+ Scene-based init
         if (@available(iOS 13.0, *)) {
             for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
                 if ([scene isKindOfClass:[UIWindowScene class]]) {
@@ -857,7 +875,6 @@ static GMMenuWindow *_sharedWindow;
                 }
             }
         }
-        // Fallback for iOS 12 / non-scene
         if (!_sharedWindow) {
             _sharedWindow = [[GMMenuWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         }
@@ -877,13 +894,10 @@ static GMMenuWindow *_sharedWindow;
 
 - (void)hide {
     [[GMMenuViewController sharedController] dismiss];
-    // dismiss animates then sets hidden=YES in completion block
 }
 
-// Pass touches through the transparent backdrop — only intercept real menu views
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     UIView *hit = [super hitTest:point withEvent:event];
-    // If hit is the root transparent view, let through
     if (hit == self || hit == self.rootViewController.view) return nil;
     return hit;
 }
@@ -896,11 +910,9 @@ static GMMenuWindow *_sharedWindow;
 
 static GMFloatingButton *_sharedFloatingButton;
 
-// Private UIWindow that hosts the floating button
 @interface _GMFloatWindow : UIWindow @end
 @implementation _GMFloatWindow
 - (UIView *)hitTest:(CGPoint)p withEvent:(UIEvent *)e {
-    // Only intercept touches on the button itself, pass everything else through
     UIView *hit = [super hitTest:p withEvent:e];
     return (hit == self) ? nil : hit;
 }
@@ -909,12 +921,13 @@ static GMFloatingButton *_sharedFloatingButton;
 @implementation GMFloatingButton {
     _GMFloatWindow *_window;
     UIView         *_btnView;
-    UIView         *_ring;      // border ring — stored so we can recolor it
+    UIView         *_ring;
     UIImageView    *_imgView;
     UIView         *_dot;
     CGPoint         _dragStart;
     CGPoint         _originStart;
-    BOOL            _isOpen;    // track state locally (avoid race with animation)
+    BOOL            _isOpen;
+    BOOL            _didDrag;      // ✅ เพิ่มแล้ว!
 }
 
 + (instancetype)sharedButton {
@@ -927,7 +940,6 @@ static GMFloatingButton *_sharedFloatingButton;
 - (void)install {
     if (_window) return;
 
-    // Create always-on-top window (level below menu)
     if (@available(iOS 13.0, *)) {
         for (UIScene *sc in [UIApplication sharedApplication].connectedScenes) {
             if ([sc isKindOfClass:[UIWindowScene class]]) {
@@ -938,12 +950,11 @@ static GMFloatingButton *_sharedFloatingButton;
     }
     if (!_window) _window = [[_GMFloatWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 
-    _window.windowLevel     = UIWindowLevelAlert + 50; // below menu (100) but above app
+    _window.windowLevel     = UIWindowLevelAlert + 50;
     _window.backgroundColor = [UIColor clearColor];
     _window.hidden          = NO;
     [_window makeKeyAndVisible];
 
-    // The draggable circular button
     CGFloat side = 68.0f;
     _btnView = [[UIView alloc] initWithFrame:CGRectMake(20, 100, side, side)];
     _btnView.layer.cornerRadius  = side * 0.5f;
@@ -954,7 +965,6 @@ static GMFloatingButton *_sharedFloatingButton;
     _btnView.layer.shadowOffset  = CGSizeMake(0, 5);
     [_window addSubview:_btnView];
 
-    // Border ring view (inside, for clipping image correctly)
     _ring = [[UIView alloc] initWithFrame:CGRectMake(0, 0, side, side)];
     _ring.layer.cornerRadius  = side * 0.5f;
     _ring.layer.borderWidth   = 3.0f;
@@ -962,13 +972,10 @@ static GMFloatingButton *_sharedFloatingButton;
     _ring.clipsToBounds       = YES;
     [_btnView addSubview:_ring];
 
-    // Image — loaded from tweak Resources bundle (Theos packages Resources/*.* into a bundle)
     _imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, side, side)];
     _imgView.contentMode = UIViewContentModeScaleAspectFill;
     _imgView.clipsToBounds = YES;
 
-    // โหลดรูปจาก Resources bundle ที่ Theos pack ไว้ใน .deb
-    // ถ้าหาไม่เจอ fallback เป็น system icon เพื่อให้ปุ่มแสดงเสมอ
     NSBundle *tweakBundle = [NSBundle bundleForClass:[GMFloatingButton class]];
     NSString *imgPath = [tweakBundle pathForResource:@"toggle-icon" ofType:@"jpeg"];
     if (imgPath) {
@@ -980,10 +987,9 @@ static GMFloatingButton *_sharedFloatingButton;
     }
     [_ring addSubview:_imgView];
 
-    // Green dot indicator (bottom-right)
     _dot = [[UIView alloc] initWithFrame:CGRectMake(side - 18, side - 18, 16, 16)];
     _dot.layer.cornerRadius  = 8.0f;
-    _dot.backgroundColor     = [UIColor colorWithWhite:0.55f alpha:1]; // grey = closed
+    _dot.backgroundColor     = [UIColor colorWithWhite:0.55f alpha:1];
     _dot.layer.borderWidth   = 2.5f;
     _dot.layer.borderColor   = [UIColor whiteColor].CGColor;
     _dot.layer.shadowColor   = [UIColor blackColor].CGColor;
@@ -991,7 +997,6 @@ static GMFloatingButton *_sharedFloatingButton;
     _dot.layer.shadowRadius  = 3.0f;
     [_btnView addSubview:_dot];
 
-    // Gestures
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc]
         initWithTarget:self action:@selector(_panned:)];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
@@ -1036,16 +1041,13 @@ static GMFloatingButton *_sharedFloatingButton;
         [[GMMenuWindow sharedWindow] hide];
     }
 
-    // อัพเดตสีขอบและ dot ตาม state
     [UIView animateWithDuration:0.20 animations:^{
         if (self->_isOpen) {
-            // เปิด — ขอบเหลือง, dot เขียว
             self->_ring.layer.borderColor =
                 [UIColor colorWithRed:1.0f green:0.91f blue:0.20f alpha:1].CGColor;
             self->_dot.backgroundColor =
                 [UIColor colorWithRed:0.25f green:0.85f blue:0.45f alpha:1];
         } else {
-            // ปิด — ขอบขาว, dot เทา
             self->_ring.layer.borderColor =
                 [UIColor colorWithWhite:1.0f alpha:0.70f].CGColor;
             self->_dot.backgroundColor =
@@ -1053,7 +1055,6 @@ static GMFloatingButton *_sharedFloatingButton;
         }
     }];
 
-    // Bounce
     [UIView animateWithDuration:0.10 animations:^{
         self->_btnView.transform = CGAffineTransformMakeScale(0.86f, 0.86f);
     } completion:^(BOOL d) {
