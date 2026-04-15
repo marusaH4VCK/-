@@ -1025,10 +1025,14 @@ static GMFloatingButton *_sharedFloatingButton;
             _btnView.bounds.size.width,
             _btnView.bounds.size.height);
     } else {
-        [UIView animateWithDuration:0.18 usingSpringWithDamping:0.7
-            initialSpringVelocity:0.3 options:0 animations:^{
-            self->_btnView.transform = CGAffineTransformIdentity;
-        } completion:nil];
+      [UIView animateWithDuration:0.18
+                      delay:0
+     usingSpringWithDamping:0.7
+      initialSpringVelocity:0.3
+                    options:UIViewAnimationOptionCurveEaseOut
+                 animations:^{
+    self->_btnView.transform = CGAffineTransformIdentity;
+} completion:nil];
     }
 }
 
@@ -1057,7 +1061,7 @@ static GMFloatingButton *_sharedFloatingButton;
 
     [UIView animateWithDuration:0.10 animations:^{
         self->_btnView.transform = CGAffineTransformMakeScale(0.86f, 0.86f);
-    } completion:^(BOOL d) {
+    } completion:^(BOOL __unused d) {
         [UIView animateWithDuration:0.25 delay:0
              usingSpringWithDamping:0.55 initialSpringVelocity:0.5
                             options:0 animations:^{
