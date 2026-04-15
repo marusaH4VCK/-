@@ -2,26 +2,6 @@
 #import <objc/runtime.h>
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MARK: - Color Constants
-// ═══════════════════════════════════════════════════════════════════════════════
-
-#define GM_BG_DARK          [UIColor colorWithWhite:0.12f alpha:1]
-#define GM_BG_LIGHT         [UIColor colorWithWhite:0.96f alpha:1]
-#define GM_SIDEBAR_DARK     [UIColor colorWithWhite:0.18f alpha:1]
-#define GM_SIDEBAR_LIGHT    [UIColor colorWithWhite:0.88f alpha:1]
-#define GM_PILL_DARK        [UIColor colorWithWhite:0.25f alpha:1]
-#define GM_PILL_LIGHT       [UIColor colorWithWhite:0.98f alpha:1]
-#define GM_ROW_DARK         [UIColor colorWithWhite:0.20f alpha:1]
-#define GM_ROW_LIGHT        [UIColor colorWithWhite:1.0f alpha:1]
-#define GM_TEXT_DARK        [UIColor whiteColor]
-#define GM_TEXT_LIGHT       [UIColor colorWithWhite:0.12f alpha:1]
-#define GM_SUBTEXT_DARK     [UIColor colorWithWhite:0.60f alpha:1]
-#define GM_SUBTEXT_LIGHT    [UIColor colorWithWhite:0.55f alpha:1]
-#define GM_CHECK_BG         [UIColor colorWithRed:0.30f green:0.65f blue:0.95f alpha:1]
-#define GM_THUMB_DARK       [UIColor colorWithWhite:0.85f alpha:1]
-#define GM_SEG_ACTIVE       [UIColor colorWithRed:0.25f green:0.60f blue:0.95f alpha:1]
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // MARK: - Helpers
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -634,7 +614,6 @@ static GMMenuViewController *_sharedController;
 }
 
 - (void)_buildLayout {
-    // Remove any old subviews (theme switch)
     for (UIView *v in self.view.subviews) [v removeFromSuperview];
 
     BOOL dark = _isDark;
@@ -644,7 +623,6 @@ static GMMenuViewController *_sharedController;
     if (cx < 20) cx = 20;
     if (cy < 80) cy = 80;
 
-    // Shadow wrapper
     _container = [[UIView alloc] initWithFrame:CGRectMake(cx, cy, CW, CH)];
     _container.layer.cornerRadius  = 20.0f;
     _container.layer.shadowColor   = [UIColor blackColor].CGColor;
@@ -653,12 +631,10 @@ static GMMenuViewController *_sharedController;
     _container.layer.shadowOffset  = CGSizeMake(0, 8);
     [self.view addSubview:_container];
 
-    // Drag
     UIPanGestureRecognizer *drag = [[UIPanGestureRecognizer alloc]
         initWithTarget:self action:@selector(_dragged:)];
     [_container addGestureRecognizer:drag];
 
-    // Clipping inner view
     UIView *clip = [[UIView alloc] initWithFrame:_container.bounds];
     clip.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     clip.layer.cornerRadius = 20.0f;
@@ -666,13 +642,11 @@ static GMMenuViewController *_sharedController;
     clip.backgroundColor = dark ? GM_BG_DARK : GM_BG_LIGHT;
     [_container addSubview:clip];
 
-    // Sidebar
     _sidebar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 64, CH)];
     _sidebar.backgroundColor = dark ? GM_SIDEBAR_DARK : GM_SIDEBAR_LIGHT;
     _sidebar.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     [clip addSubview:_sidebar];
 
-    // Sidebar tab buttons
     NSArray<NSString *> *icons = @[@"eye", @"scope", @"gamecontroller",
                                     @"wrench.and.screwdriver", @"square.grid.2x2", @"gear"];
     NSMutableArray *btns = [NSMutableArray array];
@@ -694,17 +668,14 @@ static GMMenuViewController *_sharedController;
     }
     _tabButtons = [btns copy];
 
-    // Right panel
     CGFloat rpW = CW - 64;
     UIView *rightPanel = [[UIView alloc] initWithFrame:CGRectMake(64, 0, rpW, CH)];
     rightPanel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     rightPanel.backgroundColor = [UIColor clearColor];
     [clip addSubview:rightPanel];
 
-    // Header bar
     [self _buildHeaderIn:rightPanel];
 
-    // Scrollable content
     _scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 58, rpW, CH - 58)];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.showsVerticalScrollIndicator = NO;
@@ -823,7 +794,7 @@ static GMMenuViewController *_sharedController;
     }
 }
 
-- (void)_saveTapped { /* hook in here to save settings */ }
+- (void)_saveTapped { }
 
 - (void)_brightnessTapped {
     _isDark = !_isDark;
@@ -850,7 +821,7 @@ static GMMenuViewController *_sharedController;
     [UIView animateWithDuration:0.18 animations:^{
         self->_container.transform = CGAffineTransformMakeScale(0.90f, 0.90f);
         self->_container.alpha = 0;
-    } completion:^(BOOL __unused done) {
+    } completion:^(__unused BOOL done) {
         [GMMenuWindow sharedWindow].hidden = YES;
     }];
 }
@@ -858,7 +829,7 @@ static GMMenuViewController *_sharedController;
 @end
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MARK: - GMMenuWindow  (UIWindow wrapper)
+// MARK: - GMMenuWindow
 // ═══════════════════════════════════════════════════════════════════════════════
 
 static GMMenuWindow *_sharedWindow;
@@ -919,34 +890,6 @@ static GMFloatingButton *_sharedFloatingButton;
 @end
 
 @implementation GMFloatingButton {
-- (void)toggleMenu {
-    _isOpen = !_isOpen;
-    if (_isOpen) {
-        [[GMMenuWindow sharedWindow] show];
-    } else {
-        [[GMMenuWindow sharedWindow] hide];
-    }
-    
-    [UIView animateWithDuration:0.20 animations:^{
-        if (self->_isOpen) {
-            self->_ring.layer.borderColor = [UIColor colorWithRed:1.0f green:0.91f blue:0.20f alpha:1].CGColor;
-            self->_dot.backgroundColor = [UIColor colorWithRed:0.25f green:0.85f blue:0.45f alpha:1];
-        } else {
-            self->_ring.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.70f].CGColor;
-            self->_dot.backgroundColor = [UIColor colorWithWhite:0.55f alpha:1];
-        }
-    }];
-    
-    [UIView animateWithDuration:0.10 animations:^{
-        self->_btnView.transform = CGAffineTransformMakeScale(0.86f, 0.86f);
-    } completion:^(__unused BOOL d) {
-        [UIView animateWithDuration:0.25 delay:0
-             usingSpringWithDamping:0.55 initialSpringVelocity:0.5
-                            options:0 animations:^{
-            self->_btnView.transform = CGAffineTransformIdentity;
-        } completion:nil];
-    }];
-}
     _GMFloatWindow *_window;
     UIView         *_btnView;
     UIView         *_ring;
@@ -955,7 +898,7 @@ static GMFloatingButton *_sharedFloatingButton;
     CGPoint         _dragStart;
     CGPoint         _originStart;
     BOOL            _isOpen;
-    BOOL            _didDrag;      // ✅ เพิ่มแล้ว!
+    BOOL            _didDrag;
 }
 
 + (instancetype)sharedButton {
@@ -1053,43 +996,42 @@ static GMFloatingButton *_sharedFloatingButton;
             _btnView.bounds.size.width,
             _btnView.bounds.size.height);
     } else {
-      [UIView animateWithDuration:0.18
-                      delay:0
-     usingSpringWithDamping:0.7
-      initialSpringVelocity:0.3
-                    options:UIViewAnimationOptionCurveEaseOut
-                 animations:^{
-    self->_btnView.transform = CGAffineTransformIdentity;
-} completion:nil];
+        [UIView animateWithDuration:0.18
+                              delay:0
+             usingSpringWithDamping:0.7
+              initialSpringVelocity:0.3
+                            options:UIViewAnimationOptionCurveEaseOut
+                         animations:^{
+            self->_btnView.transform = CGAffineTransformIdentity;
+        } completion:nil];
     }
 }
 
 - (void)_tapped {
-    _isOpen = !_isOpen;
+    [self toggleMenu];
+}
 
+- (void)toggleMenu {
+    _isOpen = !_isOpen;
     if (_isOpen) {
         [[GMMenuWindow sharedWindow] show];
     } else {
         [[GMMenuWindow sharedWindow] hide];
     }
-
+    
     [UIView animateWithDuration:0.20 animations:^{
         if (self->_isOpen) {
-            self->_ring.layer.borderColor =
-                [UIColor colorWithRed:1.0f green:0.91f blue:0.20f alpha:1].CGColor;
-            self->_dot.backgroundColor =
-                [UIColor colorWithRed:0.25f green:0.85f blue:0.45f alpha:1];
+            self->_ring.layer.borderColor = [UIColor colorWithRed:1.0f green:0.91f blue:0.20f alpha:1].CGColor;
+            self->_dot.backgroundColor = [UIColor colorWithRed:0.25f green:0.85f blue:0.45f alpha:1];
         } else {
-            self->_ring.layer.borderColor =
-                [UIColor colorWithWhite:1.0f alpha:0.70f].CGColor;
-            self->_dot.backgroundColor =
-                [UIColor colorWithWhite:0.55f alpha:1];
+            self->_ring.layer.borderColor = [UIColor colorWithWhite:1.0f alpha:0.70f].CGColor;
+            self->_dot.backgroundColor = [UIColor colorWithWhite:0.55f alpha:1];
         }
     }];
-
+    
     [UIView animateWithDuration:0.10 animations:^{
         self->_btnView.transform = CGAffineTransformMakeScale(0.86f, 0.86f);
-    } completion:^(BOOL __unused d) {
+    } completion:^(__unused BOOL d) {
         [UIView animateWithDuration:0.25 delay:0
              usingSpringWithDamping:0.55 initialSpringVelocity:0.5
                             options:0 animations:^{
