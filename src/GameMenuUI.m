@@ -1,6 +1,43 @@
 #import "GameMenuUI.h"
 #import <objc/runtime.h>
 
+// MARK: - Color Constants Implementation
+
+UIColor *GM_BG_DARK;
+UIColor *GM_BG_LIGHT;
+UIColor *GM_SIDEBAR_DARK;
+UIColor *GM_SIDEBAR_LIGHT;
+UIColor *GM_PILL_DARK;
+UIColor *GM_PILL_LIGHT;
+UIColor *GM_ROW_DARK;
+UIColor *GM_ROW_LIGHT;
+UIColor *GM_TEXT_DARK;
+UIColor *GM_TEXT_LIGHT;
+UIColor *GM_SUBTEXT_DARK;
+UIColor *GM_SUBTEXT_LIGHT;
+UIColor *GM_CHECK_BG;
+UIColor *GM_THUMB_DARK;
+UIColor *GM_SEG_ACTIVE;
+
+__attribute__((constructor))
+static void initColors(void) {
+    GM_BG_DARK = [UIColor colorWithWhite:0.12f alpha:1];
+    GM_BG_LIGHT = [UIColor colorWithWhite:0.96f alpha:1];
+    GM_SIDEBAR_DARK = [UIColor colorWithWhite:0.18f alpha:1];
+    GM_SIDEBAR_LIGHT = [UIColor colorWithWhite:0.88f alpha:1];
+    GM_PILL_DARK = [UIColor colorWithWhite:0.25f alpha:1];
+    GM_PILL_LIGHT = [UIColor colorWithWhite:0.98f alpha:1];
+    GM_ROW_DARK = [UIColor colorWithWhite:0.20f alpha:1];
+    GM_ROW_LIGHT = [UIColor colorWithWhite:1.0f alpha:1];
+    GM_TEXT_DARK = [UIColor whiteColor];
+    GM_TEXT_LIGHT = [UIColor colorWithWhite:0.12f alpha:1];
+    GM_SUBTEXT_DARK = [UIColor colorWithWhite:0.60f alpha:1];
+    GM_SUBTEXT_LIGHT = [UIColor colorWithWhite:0.55f alpha:1];
+    GM_CHECK_BG = [UIColor colorWithRed:0.30f green:0.65f blue:0.95f alpha:1];
+    GM_THUMB_DARK = [UIColor colorWithWhite:0.85f alpha:1];
+    GM_SEG_ACTIVE = [UIColor colorWithRed:0.25f green:0.60f blue:0.95f alpha:1];
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MARK: - Helpers
 // ═══════════════════════════════════════════════════════════════════════════════
