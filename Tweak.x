@@ -13,7 +13,7 @@
         addObserverForName:UIApplicationDidBecomeActiveNotification
                     object:nil
                      queue:[NSOperationQueue mainQueue]
-                usingBlock:^(NSNotification *note) {
+                usingBlock:^(__unused NSNotification *note) {
         // สร้างปุ่มแค่ครั้งเดียว
         static dispatch_once_t once;
         dispatch_once(&once, ^{
