@@ -895,8 +895,8 @@ static GMMenuWindow *_sharedWindow;
 }
 
 - (void)show {
-    self.windoLevel = 
-    UIWindowLevelAlert + 999
+    self.windowLevel = 
+    UIWindowLevelAlert + 999;
     self.hidden = NO;
     [self makeKeyAndVisible];
     [[GMMenuViewController sharedController] show];
