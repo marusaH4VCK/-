@@ -2,12 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>GameMenuUI</key>
-    <dict>
-        <key>Bundles</key>
-        <array>
-            <string>org.ppsspp.ppsspp</string>
-        </array>
-    </dict>
+    <key>CFBundleExecutable</key>
+    <string>GameMenuUI</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.yourcompany.gamemenuui</string>
+    <key>CFBundleName</key>
+    <string>GameMenuUI</string>
+    <key>CFBundlePackageType</key>
+    <string>TWL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>MinimumOSVersion</key>
+    <string>14.0</string>
 </dict>
 </plist>
