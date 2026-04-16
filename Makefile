@@ -1,4 +1,3 @@
-export THEOS=$(THEOS)
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = GameMenuUI
