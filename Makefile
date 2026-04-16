@@ -1,9 +1,9 @@
-export THEOS=/opt/theos
+export THEOS=$(THEOS)
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = GameMenuUI
 
-GameMenuUI_FILES = Tweak.xm src/GameMenuUI.m src/KeyAuthUI_full.mm
+GameMenuUI_FILES = Tweak.x src/GameMenuUI.m src/KeyAuthUI_full.mm
 
 GameMenuUI_FRAMEWORKS = UIKit Foundation Metal MetalKit
 
